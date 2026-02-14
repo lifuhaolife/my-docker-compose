@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.12-management-alpine
+    container_name: rabbitmq
+    restart: unless-stopped
+    env_file:
+      - ${SECRETS_DIR:-../secrets}/middleware/.env.rabbitmq
+    ports:
+      - "${RABBITMQ_AMQP_PORT:-5672}:5672"
+      - "${RABBITMQ_MGMT_PORT:-15672}:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+      - ../config/middleware/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins
+      - ../logs/rabbitmq:/var/log/rabbitmq
+    networks:
+      - mq_network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+volumes:
+  rabbitmq_data:
+    driver: local
+
+networks:
+  mq_network:
+    driver: bridge

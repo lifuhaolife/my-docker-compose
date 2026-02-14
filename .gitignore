@@ -1,0 +1,45 @@
+# 环境变量文件 (由 secrets submodule 提供)
+.env
+*.env.local
+
+# 数据持久化目录
+volumes/
+data/
+logs/
+
+# IDE 配置
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
+
+# 临时文件
+tmp/
+temp/
+*.tmp
+*.log
+
+# 备份文件
+backup/
+*.bak
+*.sql.gz
+
+# 敏感信息 (双重保险)
+secrets/*.env
+secrets/**/*.env
+secrets/**/*.key
+secrets/**/*.pem
+secrets/**/passwords.txt
+
+# Docker 相关
+.docker/
+docker-compose.override.yml
+
+# 测试文件
+test/
+*.test.yml
