@@ -275,7 +275,35 @@ init_secrets() {
         fi
     fi
     
-    # 其他服务...
+    # RabbitMQ
+    if [ ! -f "${SECRETS_DIR}/middleware/.env.rabbitmq" ]; then
+        if [ -f "${INSTALL_DIR}/secrets/templates/middleware/.env.rabbitmq.example" ]; then
+            cp "${INSTALL_DIR}/secrets/templates/middleware/.env.rabbitmq.example" \
+               "${SECRETS_DIR}/middleware/.env.rabbitmq"
+            sed -i "s/CHANGE_ME_RABBITMQ_PASSWORD!/$(generate_password)/g" \
+                "${SECRETS_DIR}/middleware/.env.rabbitmq"
+            log_success "RabbitMQ 配置初始化完成"
+        fi
+    fi
+    
+    # Nacos
+    if [ ! -f "${SECRETS_DIR}/middleware/.env.nacos" ]; then
+        if [ -f "${INSTALL_DIR}/secrets/templates/middleware/.env.nacos.example" ]; then
+            cp "${INSTALL_DIR}/secrets/templates/middleware/.env.nacos.example" \
+               "${SECRETS_DIR}/middleware/.env.nacos"
+            # Nacos 使用固定配置,不需要随机密码
+            log_success "Nacos 配置初始化完成"
+        fi
+    fi
+    
+    # 通用配置
+    if [ ! -f "${SECRETS_DIR}/.env.common" ]; then
+        if [ -f "${INSTALL_DIR}/secrets/templates/.env.common.example" ]; then
+            cp "${INSTALL_DIR}/secrets/templates/.env.common.example" \
+               "${SECRETS_DIR}/.env.common"
+            log_success "通用配置初始化完成"
+        fi
+    fi
     
     log_success "Secrets 配置初始化完成"
 }

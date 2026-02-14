@@ -30,8 +30,13 @@ backup/
 *.sql.gz
 
 # 敏感信息 (双重保险)
-secrets/*.env
-secrets/**/*.env
+# 排除 secrets 目录下的所有 .env 文件
+secrets/.env
+secrets/.env.*
+secrets/*/.env
+secrets/*/.env.*
+secrets/*/*/.env
+secrets/*/*/.env.*
 secrets/**/*.key
 secrets/**/*.pem
 secrets/**/passwords.txt
