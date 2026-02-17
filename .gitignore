@@ -30,17 +30,8 @@ backup/
 *.bak
 *.sql.gz
 
-# 敏感信息 (双重保险)
-# 排除 secrets 目录下的所有 .env 文件
-secrets/.env
-secrets/.env.*
-secrets/*/.env
-secrets/*/.env.*
-secrets/*/*/.env
-secrets/*/*/.env.*
-secrets/**/*.key
-secrets/**/*.pem
-secrets/**/passwords.txt
+# 旧的 secrets 目录（已迁移到 .env）
+secrets/
 
 # Docker 相关
 .docker/
