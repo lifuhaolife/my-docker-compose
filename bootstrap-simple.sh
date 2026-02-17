@@ -21,8 +21,8 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
-# 安装目录
-INSTALL_DIR="${INSTALL_DIR:-$HOME/docker-compose-env}"
+# 安装目录（统一部署到 /opt/docker-containers）
+INSTALL_DIR="${INSTALL_DIR:-/opt/docker-containers}"
 
 # 日志函数
 log_info() { echo -e "${BLUE}[INFO]${NC} $1"; }
@@ -46,6 +46,13 @@ check_dependencies() {
     
     if ! command -v docker-compose &> /dev/null; then
         log_error "Docker Compose 未安装"
+        exit 1
+    fi
+    
+    # 检查 /opt 目录写权限
+    if [ ! -w "/opt" ] && [ "$EUID" -ne 0 ]; then
+        log_error "需要 root 权限或使用 sudo 执行脚本"
+        log_info "使用方法: curl -fsSL https://... | sudo bash"
         exit 1
     fi
     
@@ -74,9 +81,20 @@ create_directories() {
     mkdir -p "${INSTALL_DIR}/docker-compose/web-server"
     mkdir -p "${INSTALL_DIR}/docker-compose/middleware"
     mkdir -p "${INSTALL_DIR}/config/database/mysql/conf.d"
+    mkdir -p "${INSTALL_DIR}/config/database/mysql/init"
+    mkdir -p "${INSTALL_DIR}/config/database/postgresql/init"
     mkdir -p "${INSTALL_DIR}/config/cache/redis"
     mkdir -p "${INSTALL_DIR}/config/web-server/nginx/conf.d"
-    mkdir -p "${INSTALL_DIR}/logs"
+    mkdir -p "${INSTALL_DIR}/config/web-server/nginx/ssl"
+    mkdir -p "${INSTALL_DIR}/config/middleware/rabbitmq"
+    mkdir -p "${INSTALL_DIR}/config/middleware/nacos"
+    mkdir -p "${INSTALL_DIR}/logs/mysql"
+    mkdir -p "${INSTALL_DIR}/logs/redis"
+    mkdir -p "${INSTALL_DIR}/logs/postgresql"
+    mkdir -p "${INSTALL_DIR}/logs/nginx"
+    mkdir -p "${INSTALL_DIR}/logs/rabbitmq"
+    mkdir -p "${INSTALL_DIR}/logs/nacos"
+    mkdir -p "${INSTALL_DIR}/volumes"
     
     log_success "目录创建完成: $INSTALL_DIR"
 }
@@ -221,7 +239,7 @@ show_help() {
 
 选项:
     -h, --help              显示帮助信息
-    -i, --install-dir DIR   指定安装目录 (默认: ~/docker-compose-env)
+    -i, --install-dir DIR   指定安装目录 (默认: /opt/docker-containers)
     --init                  仅初始化，不部署
     --deploy                跳过下载，仅部署
 

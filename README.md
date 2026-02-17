@@ -8,35 +8,61 @@
 - ✅ **云端存储**: Docker Compose 配置存储在 GitHub
 - ✅ **统一管理**: 所有密码和配置集中在一个环境变量文件
 - ✅ **一键部署**: 无需 Git，通过 HTTP 下载即可部署
+- ✅ **统一目录**: 部署到统一的 `/opt/docker-containers` 目录
 
 ## 🚀 快速开始
 
 ### 方式 1: 远程一键部署
 
 ```bash
-# 一键部署 MySQL 和 Redis
-curl -fsSL https://raw.githubusercontent.com/lifuhaolife/my-docker-compose/main/bootstrap-simple.sh | bash
+# 一键部署 MySQL 和 Redis（需要 sudo 权限）
+curl -fsSL https://raw.githubusercontent.com/lifuhaolife/my-docker-compose/main/bootstrap-simple.sh | sudo bash
 
 # 部署指定服务
-curl -fsSL https://raw.githubusercontent.com/lifuhaolife/my-docker-compose/main/bootstrap-simple.sh | bash -s -- mysql redis nginx
+curl -fsSL https://raw.githubusercontent.com/lifuhaolife/my-docker-compose/main/bootstrap-simple.sh | sudo bash -s -- mysql redis nginx
 ```
 
 ### 方式 2: 本地部署
 
 ```bash
-# 克隆仓库
-git clone https://github.com/lifuhaolife/my-docker-compose.git
-cd my-docker-compose
+# 克隆仓库到统一部署目录
+sudo git clone https://github.com/lifuhaolife/my-docker-compose.git /opt/docker-containers
+cd /opt/docker-containers
 
 # 复制环境变量模板
-cp .env.example .env
+sudo cp .env.example .env
 
 # 编辑密码配置
-vi .env
+sudo vi .env
 
 # 部署服务
-docker-compose -f docker-compose/database/mysql.yml up -d
-docker-compose -f docker-compose/cache/redis.yml up -d
+sudo docker-compose -f docker-compose/database/mysql.yml up -d
+sudo docker-compose -f docker-compose/cache/redis.yml up -d
+```
+
+## 📂 统一部署目录
+
+所有服务统一部署到 `/opt/docker-containers` 目录：
+
+```
+/opt/docker-containers/
+├── .env.example              # 环境变量模板
+├── .env                      # 实际环境变量（包含密码）
+├── bootstrap-simple.sh       # 部署脚本
+├── docker-compose/           # Docker Compose 配置
+│   ├── database/
+│   ├── cache/
+│   ├── middleware/
+│   └── web-server/
+├── config/                   # 服务配置文件
+│   ├── database/
+│   ├── cache/
+│   └── web-server/
+├── logs/                     # 日志目录
+│   ├── mysql/
+│   ├── redis/
+│   └── nginx/
+└── volumes/                  # 数据卷目录
 ```
 
 ## 📝 配置说明
@@ -160,7 +186,7 @@ docker-compose -f docker-compose/database/mysql.yml down -v
 ## 📁 项目结构
 
 ```
-my-docker-compose/
+/opt/docker-containers/
 ├── .env.example              # 环境变量模板（提交到 Git）
 ├── .env                      # 实际环境变量（不提交）
 ├── bootstrap-simple.sh       # 简化部署脚本
@@ -176,10 +202,20 @@ my-docker-compose/
 │   └── web-server/
 │       └── nginx.yml
 ├── config/                   # 服务配置文件
-│   ├── database/mysql/conf.d/
+│   ├── database/mysql/
+│   │   ├── conf.d/
+│   │   └── init/
 │   ├── cache/redis/
-│   └── web-server/nginx/
-└── logs/                     # 日志目录
+│   ├── web-server/nginx/
+│   └── middleware/
+├── logs/                     # 日志目录
+│   ├── mysql/
+│   ├── redis/
+│   ├── postgresql/
+│   ├── nginx/
+│   ├── rabbitmq/
+│   └── nacos/
+└── volumes/                  # 数据持久化目录
 ```
 
 ## 🛠️ 高级用法
@@ -218,6 +254,9 @@ docker-compose -f docker-compose/database/mysql.yml --env-file .env.dev up -d
 ### 服务无法启动
 
 ```bash
+# 进入部署目录
+cd /opt/docker-containers
+
 # 查看详细日志
 docker-compose -f docker-compose/database/mysql.yml logs
 
@@ -232,10 +271,11 @@ cat .env
 
 ```bash
 # 检查 .env 文件
+cd /opt/docker-containers
 cat .env | grep MYSQL_ROOT_PASSWORD
 
 # 重新设置密码
-vi .env
+sudo vi .env
 
 # 重启服务
 docker-compose -f docker-compose/database/mysql.yml restart
@@ -248,15 +288,10 @@ docker-compose -f docker-compose/database/mysql.yml restart
 docker network ls
 
 # 重建网络
+cd /opt/docker-containers
 docker-compose -f docker-compose/database/mysql.yml down
 docker-compose -f docker-compose/database/mysql.yml up -d
 ```
-
-## 📚 相关文档
-
-- [快速开始指南](QUICKSTART.md)
-- [部署文档](docs/deployment.md)
-- [故障排除](docs/troubleshooting.md)
 
 ## 🤝 贡献
 
