@@ -44,10 +44,24 @@ check_dependencies() {
         exit 1
     fi
     
-    if ! command -v docker-compose &> /dev/null; then
+    # 检查 Docker Compose（支持 V1 和 V2）
+    COMPOSE_CMD=""
+    if docker compose version &> /dev/null; then
+        COMPOSE_CMD="docker compose"
+        log_success "检测到 Docker Compose V2"
+    elif command -v docker-compose &> /dev/null; then
+        COMPOSE_CMD="docker-compose"
+        log_success "检测到 Docker Compose V1"
+    else
         log_error "Docker Compose 未安装"
+        log_info "安装方法:"
+        log_info "  V2: curl -fsSL https://get.docker.com | bash"
+        log_info "  V1: sudo curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-\$(uname -s)-\$(uname -m) -o /usr/local/bin/docker-compose"
         exit 1
     fi
+    
+    # 导出 COMPOSE_CMD 供其他函数使用
+    export COMPOSE_CMD
     
     # 检查 /opt 目录写权限
     if [ ! -w "/opt" ] && [ "$EUID" -ne 0 ]; then
@@ -218,7 +232,7 @@ deploy_services() {
         
         if [ -f "$compose_file" ]; then
             log_info "部署 $service..."
-            docker-compose -f "$compose_file" up -d
+            $COMPOSE_CMD -f "$compose_file" up -d
             
             if [ $? -eq 0 ]; then
                 log_success "$service 部署成功"
