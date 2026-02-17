@@ -12,6 +12,13 @@ services:
       POSTGRES_INITDB_ARGS: --encoding=UTF-8 --locale=C.UTF-8
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      # 数据持久化
+      - postgres_data:/var/lib/postgresql/data
+      # 初始化脚本
+      - ../config/database/postgresql/init:/docker-entrypoint-initdb.d
+      # 日志
+      - ../logs/postgresql:/var/log/postgresql
     networks:
       - db_network
     healthcheck:
