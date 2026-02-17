@@ -592,12 +592,24 @@ main() {
     
     if [ "$install_only" = false ] && [ "$check_only" = false ]; then
         echo ""
-        read -p "是否立即部署服务? (y/n) " -n 1 -r
-        echo
-        if [[ $REPLY =~ ^[Yy]$ ]]; then
+        # 如果指定了服务参数，直接部署（适用于管道模式）
+        if [ ${#services[@]} -gt 0 ]; then
+            log_info "检测到服务参数，自动部署: ${services[*]}"
             deploy_services "${services[@]}"
         else
-            log_info "稍后可以手动部署: cd $INSTALL_DIR && docker compose -f docker-compose/database/mysql.yml up -d"
+            # 交互模式，询问用户
+            if [ -t 0 ]; then
+                read -p "是否立即部署服务? (y/n) " -n 1 -r
+                echo
+                if [[ $REPLY =~ ^[Yy]$ ]]; then
+                    deploy_services "mysql" "redis"
+                else
+                    log_info "稍后可以手动部署: cd $INSTALL_DIR && docker compose -f docker-compose/database/mysql.yml up -d"
+                fi
+            else
+                log_info "管道模式未指定服务，跳过自动部署"
+                log_info "手动部署命令: cd $INSTALL_DIR && docker compose -f docker-compose/database/mysql.yml up -d"
+            fi
         fi
     fi
     
