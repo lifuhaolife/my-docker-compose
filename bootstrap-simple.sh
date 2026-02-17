@@ -4,7 +4,7 @@
 # Docker Compose 简化部署脚本
 # ============================================
 # 功能: 通过 HTTP 下载配置文件并部署
-# 使用: curl -fsSL https://raw.githubusercontent.com/USER/REPO/main/bootstrap-simple.sh | bash
+# 使用: curl -fsSL https://cdn.jsdelivr.net/gh/USER/REPO@main/bootstrap-simple.sh | bash
 
 set -e
 
@@ -12,7 +12,7 @@ set -e
 GITHUB_USER="lifuhaolife"
 GITHUB_REPO="my-docker-compose"
 GITHUB_BRANCH="main"
-BASE_URL="https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/${GITHUB_BRANCH}"
+BASE_URL="https://cdn.jsdelivr.net/gh/${GITHUB_USER}/${GITHUB_REPO}@${GITHUB_BRANCH}"
 
 # 颜色输出
 RED='\033[0;31m'
@@ -268,10 +268,10 @@ show_help() {
 
 示例:
     # 一键部署
-    curl -fsSL https://raw.githubusercontent.com/lifuhaolife/my-docker-compose/main/bootstrap-simple.sh | bash
+    curl -fsSL https://cdn.jsdelivr.net/gh/lifuhaolife/my-docker-compose@main/bootstrap-simple.sh | sudo bash
 
     # 部署指定服务
-    curl -fsSL https://raw.githubusercontent.com/lifuhaolife/my-docker-compose/main/bootstrap-simple.sh | bash -s -- mysql redis
+    curl -fsSL https://cdn.jsdelivr.net/gh/lifuhaolife/my-docker-compose@main/bootstrap-simple.sh | sudo bash -s -- mysql redis
 
     # 本地执行
     ./bootstrap-simple.sh mysql redis nginx

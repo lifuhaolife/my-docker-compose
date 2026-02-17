@@ -16,10 +16,10 @@
 
 ```bash
 # 一键部署 MySQL 和 Redis（需要 sudo 权限）
-curl -fsSL https://raw.githubusercontent.com/lifuhaolife/my-docker-compose/main/bootstrap-simple.sh | sudo bash
+curl -fsSL https://cdn.jsdelivr.net/gh/lifuhaolife/my-docker-compose@main/bootstrap-simple.sh | sudo bash
 
 # 部署指定服务
-curl -fsSL https://raw.githubusercontent.com/lifuhaolife/my-docker-compose/main/bootstrap-simple.sh | sudo bash -s -- mysql redis nginx
+curl -fsSL https://cdn.jsdelivr.net/gh/lifuhaolife/my-docker-compose@main/bootstrap-simple.sh | sudo bash -s -- mysql redis nginx
 ```
 
 ### 方式 2: 本地部署
