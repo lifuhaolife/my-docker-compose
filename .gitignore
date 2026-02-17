@@ -1,6 +1,7 @@
-# 环境变量文件 (由 secrets submodule 提供)
-.env
+# 环境变量文件
+.env               # 实际环境变量文件（包含密码，不提交）
 *.env.local
+# 注意: .env.example 会被提交到仓库作为模板
 
 # 数据持久化目录
 volumes/

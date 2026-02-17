@@ -5,17 +5,16 @@ services:
     image: nacos/nacos-server:v2.2.0
     container_name: nacos
     restart: unless-stopped
-    env_file:
-      - ${SECRETS_DIR:-../secrets}/middleware/.env.nacos
+    environment:
+      MODE: standalone
+      PREFER_HOST_MODE: hostname
+      NACOS_AUTH_ENABLE: ${NACOS_AUTH_ENABLE}
+      NACOS_AUTH_TOKEN: ${NACOS_AUTH_TOKEN}
+      NACOS_AUTH_IDENTITY_KEY: ${NACOS_AUTH_IDENTITY_KEY}
+      NACOS_AUTH_IDENTITY_VALUE: ${NACOS_AUTH_IDENTITY_VALUE}
     ports:
       - "${NACOS_PORT:-8848}:8848"
       - "${NACOS_GRPC_PORT:-9848}:9848"
-    volumes:
-      - nacos_logs:/home/nacos/logs
-      - ../config/middleware/nacos/application.properties:/home/nacos/conf/application.properties
-    environment:
-      - MODE=standalone
-      - PREFER_HOST_MODE=hostname
     networks:
       - nacos_network
     healthcheck:
